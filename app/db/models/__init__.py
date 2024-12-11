@@ -19,5 +19,6 @@ def down():
     Base.metadata.drop_all(engine)
 
 
-down()
-up()
+def migrate():
+    down()
+    up()
