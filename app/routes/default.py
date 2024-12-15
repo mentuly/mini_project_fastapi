@@ -3,15 +3,19 @@ from fastapi import APIRouter, Query, Depends, HTTPException
 from sqlalchemy import select
 from ..models import Ads
 from ..db import AdsDB, Session
-from ..logging.middleware import request_logging_dependency
+from ..logging import request_logging_dependency
+
+# from ..helpers import search_in_elasticsearch
 
 
-default_router = APIRouter(
+filter_router = APIRouter(
+    prefix="/filter",
+    tags=["Filters"],
     dependencies=[Depends(request_logging_dependency)],
 )
 
 
-@default_router.get("/ads", response_model=List[Ads], status_code=200)
+@filter_router.get("/ads", response_model=List[Ads], status_code=200)
 async def get_ads(
     category: Optional[str] = Query(None, description="Category to filter ads"),
     min_price: Optional[float] = Query(
@@ -20,17 +24,34 @@ async def get_ads(
     max_price: Optional[float] = Query(
         None, description="Maximum price for filtering ads"
     ),
+    page: int = Query(1, ge=1, description="Page number, starts from 1"),
+    size: int = Query(10, ge=1, le=100, description="Number of ads per page, max 100"),
 ):
-    stmt = select(AdsDB)
+
+    # if category or min_price or max_price:
+    #     search_results = search_in_elasticsearch(category, min_price, max_price)
+
+    #     if not search_results:
+    #         raise HTTPException(
+    #             status_code=404, detail="No ads found matching the criteria in Elasticsearch."
+    #         )
+
+    #     return [Ads.from_orm(hit["_source"]) for hit in search_results]
+    # else:
+
+    query = select(AdsDB)
     with Session() as session:
         if category:
-            stmt = stmt.where(AdsDB.category == category)
+            query = query.where(AdsDB.category == category)
         if min_price is not None:
-            stmt = stmt.where(AdsDB.price >= min_price)
+            query = query.where(AdsDB.price >= min_price)
         if max_price is not None:
-            stmt = stmt.where(AdsDB.price <= max_price)
+            query = query.where(AdsDB.price <= max_price)
 
-        ads = session.execute(stmt).scalars().all()
+        offset = (page - 1) * size
+        query = query.offset(offset).limit(size)
+
+        ads = session.execute(query).scalars().all()
 
         if not ads:
             raise HTTPException(

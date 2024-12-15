@@ -14,3 +14,4 @@ class AdsFilter(BaseModel):
     category: Optional[str] = None
     min_price: Optional[float] = None
     max_price: Optional[float] = None
+

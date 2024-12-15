@@ -1,4 +1,4 @@
-from sqlalchemy import String 
+from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 from . import Base
 
@@ -10,4 +10,4 @@ class AdsDB(Base):
     title: Mapped[str] = mapped_column(String(35))
     description: Mapped[str] = mapped_column(String(150))
     category: Mapped[str] = mapped_column(String(25))
-    price: Mapped[float] = mapped_column()
+    price: Mapped[float]

@@ -1,7 +1,10 @@
 from fastapi import FastAPI
+from elasticsearch import Elasticsearch
 
 
 app = FastAPI()
+es = Elasticsearch("http://localhost:9200")
 
-from .routes import default_router
+from .routes import filter_router, crud_router
 from .db import migrate
+
