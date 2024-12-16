@@ -1,0 +1,12 @@
+# FROM python:3.11.2-slim-buster
+
+# WORKDIR /app/helpers
+
+# COPY requirements.txt ./
+# COPY elasticsearch ./
+
+# RUN pip install -r elasticsearch
+
+# EXPOSE 9200
+
+# CMD ["elasticsearch", "--host", "localhost", "--port", "9200"]
