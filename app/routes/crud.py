@@ -8,8 +8,10 @@ from fastapi import (
     HTTPException,
     status,
 )
+from ..db import AdsDB, User, Session
 from ..logging import request_logging_dependency
-from ..models import Ads
+from sqlalchemy import select
+from ..models import Ads, AdsOut
 
 crud_router = APIRouter(
     prefix="/item",
@@ -24,11 +26,11 @@ def read_root():
 
 
 @crud_router.post("/create", status_code=status.HTTP_201_CREATED)
-async def create():
+async def create(user: Annotated[User, Depends()]):
     pass
 
 
-@crud_router.get("/read")
+@crud_router.get("/read/{item_id}")
 async def read():
     pass
 
@@ -38,11 +40,13 @@ async def update():
     pass
 
 
-@crud_router.delete("/delete")
+@crud_router.delete("/delete/{item_id}")
 async def delete_item():
     pass
 
 
 @crud_router.get("/items/all", response_model=List[Ads])
 async def get_all_items():
-    pass
+    item = select(AdsDB)
+    
+    

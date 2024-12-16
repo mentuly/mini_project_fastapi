@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 from . import Base
@@ -11,3 +12,4 @@ class AdsDB(Base):
     description: Mapped[str] = mapped_column(String(150))
     category: Mapped[str] = mapped_column(String(25))
     price: Mapped[float]
+    published_at: Mapped[datetime]
