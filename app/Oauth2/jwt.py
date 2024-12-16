@@ -6,7 +6,7 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer
 
-app = FastAPI()
+
 
 SECRET_KEY = "your_secret_key"
 ALGORITHM = "HS256"
@@ -16,22 +16,22 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
+
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
 
-class TokenData(BaseModel):
-    username: str | None = None
+
+
 
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
+
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
@@ -41,6 +41,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
         expire = datetime.utcnow() + timedelta(minutes=15)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
 
 def verify_token(token: str, credentials_exception):
     try:
@@ -52,6 +53,7 @@ def verify_token(token: str, credentials_exception):
     except JWTError:
         raise credentials_exception
 
+
 def get_current_user(token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -60,11 +62,16 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     )
     return verify_token(token, credentials_exception)
 
+
 @app.post("/login", response_model=Token)
 def login_user(user: UserLogin):
     fake_hashed_password = hash_password("example")
-    if user.email != "idk@gmail.com" or not verify_password(user.password, fake_hashed_password):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+    if user.email != "idk@gmail.com" or not verify_password(
+        user.password, fake_hashed_password
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
+        )
     access_token = create_access_token(data={"sub": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
 

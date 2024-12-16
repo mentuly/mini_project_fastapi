@@ -13,7 +13,7 @@ class Ads(BaseModel):
     published_at: datetime
     photo: Annotated[UploadFile, File(...)] = None
 
-    @field_validator("created_at")
+    @field_validator("published_at")
     @classmethod
     def validate_published_at(cls, value):
         if value > datetime.utcnow():
