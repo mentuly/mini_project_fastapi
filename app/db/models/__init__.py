@@ -9,6 +9,8 @@ from .user import User
 from .ads import AdsDB
 from .config import Config
 
+Sessions = Config.SESSION
+
 
 def up():
     Base.metadata.create_all(Config.ENGINE)
