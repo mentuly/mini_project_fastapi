@@ -1,5 +1,4 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from .. import engine
 
 
 class Base(DeclarativeBase):
@@ -8,15 +7,15 @@ class Base(DeclarativeBase):
 
 from .user import User
 from .ads import AdsDB
-from .. import Session
+from .config import Config
 
 
 def up():
-    Base.metadata.create_all(engine)
+    Base.metadata.create_all(Config.ENGINE)
 
 
 def down():
-    Base.metadata.drop_all(engine)
+    Base.metadata.drop_all(Config.ENGINE)
 
 
 def migrate():

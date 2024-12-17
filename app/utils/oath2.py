@@ -11,6 +11,7 @@ import jwt
 
 from ..models import UserModel, TokenData
 from .hash import verify_password
+from ..helpers import get_session
 
 
 load_dotenv()
